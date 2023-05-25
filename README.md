@@ -531,3 +531,202 @@ from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 ```
+These classes are detailed next:
+
+1. `TextRankSummarizer`: This class is part of Sumy's summarization implementations. It applies the TextRank algorithm, which is a graph-based ranking algorithm for natural language processing and information retrieval. The algorithm identifies significant keywords in the text and assigns them a rank based on their interconnectedness. The `TextRankSummarizer` extracts the most relevant sentences from a document using these ranked keywords. It is typically utilized when a brief, coherent summary of a large document is required, and is beneficial in diverse areas like summarizing emails, articles, or web content.
+
+2. `LsaSummarizer`: The `LsaSummarizer` class implements another summarization technique known as Latent Semantic Analysis (LSA). LSA is a technique in natural language processing that extracts and represents the contextual-usage meaning of words by statistical computations applied to a large corpus of text. It takes into account the syntactic relationships within the text and calculates the "importance" of sentences based on their semantic content. This summarizer may be used when more complex text understanding is required, including capturing implied meanings and relationships in the text that are not explicitly stated.
+
+3. `PlaintextParser`: This class is responsible for parsing plain text data. The `PlaintextParser` takes in a string of plain text and parses it into a document that can be processed by Sumy's summarizers. The result is a structured object that represents the document, broken down into individual sentences and words. This class plays a crucial role in pre-processing, transforming raw text into a form suitable for summarization.
+
+4. `Tokenizer`: The `Tokenizer` class is a part of Sumy's natural language processing utilities. It is used to break down the text into its constituent parts, called tokens, which can be as small as individual words. Tokenizing is a fundamental step in text processing, as it transforms unstructured data into a structured form that can be analyzed and manipulated. The `Tokenizer` is essential in preparing text for further processing, such as parsing and summarization.
+
+These classes all play their unique roles within the Sumy library, working together to process and understand text data, and to generate high-quality summaries of that data.
+
+#### 3.1.3 Usage 
+
+In the following, the two functions incorporating the aforementioned summarization models are presented. These functions utilize distinct algorithms for the purpose of summarizing texts, providing two different approaches based on the specific requirements and complexity of the textual content.
+
+The purpose of these functions is to reduce the length of the content while retaining the main points, crucial details, and overall essence of the original text. Each summarization model has its unique methodology and advantage, offering versatility in handling various types of text.
+
+The functions operate by processing the input text, which involves tokenizing the text into individual words or phrases and parsing it into a structured format suitable for analysis. After this pre-processing stage, the summarization models come into play, analyzing the parsed text to determine the key points and thereby generate the summary.
+
+These functions can be used independently based on the desired summarization technique - the TextRank algorithm or the Latent Semantic Analysis. The TextRank function is suited to extract a concise summary focusing on keywords, while the LSA function provides a more sophisticated understanding of the text, capturing implicit meanings and relationships.
+
+However, it should be noted that the choice of function depends largely on the nature of the text and the desired outcome. For instance, if the goal is to quickly grasp the gist of a document, the TextRank function may be preferred. Conversely, if the aim is to derive a deeper understanding of the text, particularly in more complex or nuanced documents, the LSA function would likely provide better results.
+
+**TextRank summarizer function**:
+```python
+def textrank_summarizer(text):
+    parser = PlaintextParser.from_string(text, Tokenizer("english"))
+    summarizer = TextRankSummarizer()
+    summary = summarizer(parser.document, sentences_count=1)
+    return str(summary[0])
+```
+**LSA summarizer function**:
+```python
+def lsa_summarizer(text):
+    parser = PlaintextParser.from_string(text, Tokenizer("english"))
+    summarizer = LsaSummarizer()
+    summary = summarizer(parser.document, sentences_count=1)
+    return str(summary[0])
+```
+
+The `textrank_summarizer` and `lsa_summarizer` functions are designed to accept a single parameter, a string of English text, and output its summary as a string.
+
+Usage example:
+```python
+text = "This is a lengthy text to be summarized."
+textrank_summary = textrank_summarizer(text)
+lsa_summary = lsa_summarizer(text)
+print("TextRank Summary:", textrank_summary)
+print("LSA Summary:", lsa_summary)
+```
+The output would be the most informative sentence from the text according to the respective algorithms.
+
+#### 3.1.4 Parameters
+Both functions have the following parameter:
+
+* **text**: The English text to be summarized. It must be a string.
+
+The functions are currently set to output a one-sentence summary. It can be customized this by modifying the sentences_count parameter in the function definition.
+
+#### 3.1.5 Performance and limitations
+These functions are generally efficient and fast, thanks to the performance optimizations in the Sumy library. However, processing time can increase for larger inputs.
+
+These functions are designed to work with English text. They may not provide optimal results with other languages. Furthermore, the current configuration returns only one sentence summary, which might not be sufficient for all types of desired tasks.
+
+#### 3.1.6 References
+Here are some additional resources that can be used as references when documenting the Sumy library:
+* Official Sumy Documentation: [sumy](https://pypi.org/project/sumy/)
+* Source Code on GitHub: [Source Code](https://github.com/miso-belica/sumy)
+* TextRank Algorithm: [An explanation paper about TextRank](https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf)
+* Latent Semantic Analysis (LSA): [LSA tutorial using Python](https://www.datacamp.com/tutorial/discovering-hidden-topics-python)
+
+### 3.2 Summarizer with Transformers
+#### 3.2.1 BART summarizer
+The Bidirectional and Auto-Regressive Transformers (BART) Text Summarizer is a function leveraging the capabilities of the BART model for text summarization tasks. The model serves the purpose of condensing extensive English text into a shorter, summarized form, facilitating a more efficient digestion of information.
+
+The function has been developed based on the 'facebook/bart-large-cnn' variant of the BART model, which is renowned for its high performance in text summarization. It necessitates the installation of the Hugging Face Transformers library, which encapsulates the model and tokenizer used in the function.
+
+#### 3.2.2 Installation
+Installation of the Hugging Face Transformers library is essential for the function's operation. Python 3.6 or later is also required. The Transformers library can be installed through pip:
+```python
+pip install transformers
+```
+After successful installation of the Transformers library, the BART model and its associated tokenizer can be downloaded from the Hugging Face model hub. It is recommended to have a robust internet connection during this process, as the model files can be quite large.
+The next code is the implementation of the BART summarizer model:
+```python
+from transformers import BartTokenizer, BartForConditionalGeneration
+transformers_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
+model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+```
+
+The first line imports the necessary classes from the Hugging Face Transformers library. `BartTokenizer` and `BartForConditionalGeneration` are specific components of the BART (Bidirectional and Auto-Regressive Transformers) model architecture. `BartTokenizer` is used to convert input text into a format (tokens) that the BART model can understand and process. `BartForConditionalGeneration` is a variant of the BART model designed for tasks that involve generating text based on certain conditions, such as text summarization.
+
+#### 3.2.3 Usage
+The function for summarization with BART summarizer is:
+```python
+def generate_long_summary(text):
+    inputs = transformers_tokenizer.batch_encode_plus([text], max_length=1024, return_tensors='pt', truncation=True)
+    summary_ids = model.generate(inputs['input_ids'], num_beams=4, max_length=40, min_length=10, early_stopping=True)
+    summary = transformers_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return summary
+```
+The `generate_long_summary` function is designed to receive a string of English text as input, and produce a succinct summary of that text. The function begins by using the BART tokenizer to convert the text into a format compatible with the BART model. It then passes the tokenized input to the model, which generates a summary in tokenized form. Finally, the function decodes the tokenized summary back into human-readable text and returns it.
+
+An example of how to employ the function is as follows:
+```python
+text = "This is an extensive text that needs summarization."
+summary = generate_long_summary(text)
+print(summary)
+```
+This would output the summarized version of the text, a concise interpretation of the original input.
+
+#### 3.2.4 Parameters
+
+The `generate_long_summary` function has one input parameter:
+
+* **`text`**: The extensive English text that requires summarization. This must be in string format.
+
+In the course of the function's operation, several other parameters are used. These are:
+* **`max_length`** for both the tokenizer and the model, dictating the maximum length of the tokenized input text and the generated summary respectively. The default values are 1024 for the tokenizer and 40 for the model.
+* **`min_length`** for the model, determining the minimum length of the generated summary. The default value is 10.
+* **`num_beams`** for the model, controlling the number of beams for beam search in the model. The default value is 4.
+* **`early_stopping`**, a Boolean that decides whether to stop the beam search when num_beams sentences are generated. The default value is True.
+
+Each of these parameters can be adjusted in accordance with specific needs, but caution should be exercised as changes can affect the model's performance and the quality of the summaries.
+
+#### 3.2.5 Performance and Limitations
+
+The performance of the BART Text Summarizer is heavily contingent on the complexity and length of the input text, as well as the computational resources available. The BART model used ('facebook/bart-large-cnn') has been pretrained on a vast corpus of data and generally produces high-quality summaries. However, it is important to note that the model's performance can be influenced by the text input.
+
+In terms of limitations, the model can handle a maximum input length of 1024 tokens due to the internal `max_length` parameter for the tokenizer. For very long texts exceeding this limit, it is necessary to either truncate the text or split it into smaller chunks before processing. Moreover, the generated summary has a default maximum length of 40 tokens and a minimum of 10 tokens. Depending on the use case, these limitations can affect the utility of the summarizer.
+
+The model might occasionally produce summaries that miss important details from the original text, especially when dealing with texts that are complex or contain niche, domain-specific vocabulary. It's also worth noting that, like many NLP models, BART might not maintain the context over very long pieces of text.
+
+#### 3.2.6 Troubleshooting
+Users may encounter issues with memory usage and model loading times. This is common when working with large transformer models like BART. If memory-related errors occur, consider reducing the batch size or shortening the text input.
+
+In case of problems during installation or model loading, verify the Python version (3.6 or later required) and the installation status of the Transformers library. Ensure a stable internet connection is available when downloading the model and tokenizer.
+
+If the summaries generated are not satisfactory or lack important details, consider adjusting the internal parameters like `max_length`, `min_length`, or `num_beams` within the function. It's crucial to understand the impact of these parameters on the output and exercise due diligence while tweaking them.
+
+#### 3.2.7 References
+
+BART: [Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. Mike Lewis, Yinhan Liu, Naman Goyal, Marjan Ghazvininejad, Abdelrahman Mohamed, Omer Levy, Ves Stoyanov, Luke Zettlemoyer.](https://arxiv.org/abs/1910.13461)
+Hugging Face Transformers GitHub repository: [Detailed documentation and examples can be found in the official GitHub repository for the Transformers library.](https://github.com/huggingface/transformers)
+Hugging Face Model Hub: [A hub of pretrained models in different languages and for various tasks, including the 'facebook/bart-large-cnn' model.](https://huggingface.co/models)
+
+### 3.3 Summarizer with GPT
+#### 3.3.1 Model GPT function for summarizer
+The same GPT model used for sentiment analysis and other classifications will also be utilized for the task of text summarization. The respective function is presented as follows:
+```python
+def summarizer_gpt(text):
+    model_engine = 'gpt-3.5-turbo'
+    prompt = 'Given this hotel user review text, summarize the most important in approximate 10 words. Only use a point at the end of the summarization. ' + text
+    response = openai.ChatCompletion.create(
+        model=model_engine,
+        messages=[{'role': 'user', 'content': prompt}],
+        max_tokens=15,
+        n=1,
+        stop=['.'],
+        temperature=0.7,
+    )
+    output = response.choices[0]['message']['content'].lower().rstrip('. ,')
+    return output
+```
+#### 3.3.2 Model parameters
+
+The `summarizer_gpt` function uses the GPT-3.5-turbo model from OpenAI for text summarization tasks. Here is a detailed breakdown of the function and its parameters:
+
+* **`text`**: This is the only parameter that the summarizer_gpt function takes as input. It should be a string containing the text to be summarized.
+
+* **`model_engine`**: This variable holds the identifier of the model to be used for text generation. The identifier 'gpt-3.5-turbo' corresponds to OpenAI's GPT-3.5-turbo model. Other options include 'text-davinci-003' or 'text-curie-003', but these will have different performance and cost characteristics.
+
+* **`prompt`**: The `prompt` variable is a string that instructs the model to perform a specific task. It concatenates a command with the input text to guide the model in generating a summary.
+
+* **`response`**: This line of code makes a request to the OpenAI API to generate a text based on the input `messages`, `model`, and additional parameters.
+
+* **`model`**: The identifier of the model to be used, which in this case is the value stored in the model_engine variable.
+
+* **`messages`**: A list of message objects. Each message object has a 'role' that can be 'system', 'user', or 'assistant', and 'content' which is the actual content of the message. In this case, there is one 'user' message containing the prompt.
+
+* **`max_tokens`**: This parameter sets a limit to the length of the generated output. It is set to 15 in this instance, which means the model will generate a response that is no longer than 15 tokens.
+* **`n`**: This parameter specifies the number of independent completions to generate from the prompt. A value of 1 means only a single completion is generated.
+
+* **`stop`**: A list of sequences where the model will stop generating further tokens. In this case, it is set to ['.'], so the model will stop generating tokens once it outputs a period.
+
+* **`temperature`**: This parameter controls the randomness of the model's output. A higher temperature results in more random outputs, while a lower temperature makes the output more focused and deterministic. The temperature is set to 0.7 in this case, leaning towards deterministic but with some level of variability.
+
+The `response` object is a dictionary containing the model's generated outputs. The function extracts the first generated message content, transforms it to lowercase, removes trailing periods, commas, and spaces, and returns it as the summarized text.
+
+#### 3.3.3 Performance and limitations
+As described previously on the sentiment analysis section with GPT. It is note recommended (as far as may 2023) to make this process automatically due to Rate Limit Error in high peaks of use of OpenAI API. This could change in better models and improvements from OpenAI.
+
+#### 3.3.4 References
+Please consider this webpage as comparation of several summarization models including GPT-3.
+* Summarization with several models [News Summarization comparison](https://tagoyal.github.io/zeroshot-news-annotations.html)
+
+
+
