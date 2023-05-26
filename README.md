@@ -216,7 +216,20 @@ After waiting and successfully executing with smaller batches, gradually increas
 
 It is important to note that the specific duration to wait and the optimal batch size may vary depending on the rate limits set by the OpenAI API and the specific requirements of the implementation. Monitoring the API responses and adjusting accordingly will help ensure a smooth and efficient execution without exceeding the rate limits.
 
-##### 2.1.2.7 References 
+##### 2.1.2.7 Working in batches
+It is highly recommended to operate using incremental batches due to potential saturation issues with OpenAI's API when classifying substantial volumes of text such as reviews, which tend to be lengthy.
+For batch classification, first create a classification column with placeholder values, like `None`.
+```python
+df['sentiment'] = None
+```
+To apply batch classification incrementally to a column, it is suggested to start with 50 classifications and gradually double this number until you encounter any saturation. For example, the first time you execute the classification, using the function `get_sentiment_gpt()`, an update of the column can be performed with the `update` command, to prevent memory duplications in the dataframe.
+```python
+df['sentiment'].update(df.comments.iloc[START:END].apply(get_sentiment_gpt))
+```
+After that, gradually increment the number of rows in the `.iloc[START:END]`parameter. 
+
+
+##### 2.1.2.8 References 
 For further explorations and improvements about models including the access to the new and upcoming GPT 4 API, visit: [OpenAI documentation](https://platform.openai.com/overview)
 Book used for testings and prompts as used in this project: [Exploring GPT-3 ](https://www.packtpub.com/product/exploring-gpt-3/9781800563193)
 Technical paper about the upcoming GPT-4: [GPT-4 Tech Paper ](https://cdn.openai.com/papers/gpt-4.pdf)
